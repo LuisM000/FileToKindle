@@ -1,0 +1,6 @@
+﻿{
+  "Address": "email@outlook.com",
+  "Password": "password",
+  "Host": "smtp.office365.com",
+  "Port": 587
+}
