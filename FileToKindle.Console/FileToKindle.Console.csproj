@@ -25,4 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FileToKindle\FileToKindle.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Options\" />
+  </ItemGroup>
 </Project>

@@ -5,59 +5,76 @@ using System.Text.Json;
 using CommandLine;
 using FileToKindle.Model;
 using FileToKindle.Services;
+using FileToKindle.Console.Options;
+using System.Threading.Tasks;
 
 namespace FileToKindle.Console
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            Parser.Default.ParseArguments<ProcessOneLinkOptions, CleanOptions>(args)
-                .WithParsed<CleanOptions>(Process)
-                .WithParsed<ProcessOneLinkOptions>(Process);       
+            return Parser.Default.ParseArguments<ProcessMagnetLinksOptions, CleanOptions>(args).
+                MapResult(
+                    (CleanOptions opts) => Process(opts),
+                    (ProcessMagnetLinksOptions opts) => Process(opts),
+                    errs => 1);
         }
 
 
-        private static void Process(CleanOptions options)
+        private static int Process(CleanOptions options)
         {
             var temporalDirectories = Directory.GetDirectories(AppDomain.CurrentDomain.BaseDirectory, "_temp_*");
             foreach (var temporalDirectory in temporalDirectories)
             {
                 Directory.Delete(temporalDirectory, true);
             }
+            return 0;
         }
 
-        private static void Process(ProcessOneLinkOptions options)
+        private static int Process(ProcessMagnetLinksOptions options)
         {
-            var torrentDownloader = new TorrentDownloader();
-            var mobiConverter = new MobiConverter();
-            var emailSender = new EmailSender();
-            var downloadDirectory = Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_temp_" + Guid.NewGuid().ToString()));
-
             try
             {
-                var magnetLink = new MagnetLink(options.MagnetLink, downloadDirectory.FullName);
-                var filePath = torrentDownloader.DownloadMagnetLink(magnetLink);
-                var mobiPath = mobiConverter.ConvertToMobi(filePath);
-                var email = CreateEmail(mobiPath, options.DestinationEmail);
+                List<string> mobiPaths = new List<string>();
+                Parallel.ForEach(options.MagnetLinks, (o) =>
+                {
+                    mobiPaths.Add(GetMobiFile(o));
+                });
+
+                var emailSender = new EmailSender();
+                var email = CreateEmail(mobiPaths, options.DestinationEmail);
 
                 emailSender.Send(email);
+
+                return 0;
             }
             catch (Exception ex)
             {
                 System.Console.WriteLine(ex);
+                return 1;
             }
         }
 
-        private static Email CreateEmail(string mobiPath, string kindleEmail)
+        private static string GetMobiFile(string magnetUrl)
+        {
+            var torrentDownloader = new TorrentDownloader();
+            var mobiConverter = new MobiConverter();
+
+            var downloadDirectory = Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_temp_" + Guid.NewGuid().ToString()));
+            var magnetLink = new MagnetLink(magnetUrl, downloadDirectory.FullName);
+            var filePath = torrentDownloader.DownloadMagnetLink(magnetLink);
+            var mobiPath = mobiConverter.ConvertToMobi(filePath);
+
+            return mobiPath;
+        }
+
+        private static Email CreateEmail(IEnumerable<string> mobiPaths, string kindleEmail)
         {
             var jsonString = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "email.json"));
             var email = JsonSerializer.Deserialize<Email>(jsonString);
             email.To = kindleEmail;
-            email.AttachmentPaths = new List<string>()
-            {
-                mobiPath
-            };
+            email.AttachmentPaths = mobiPaths;
             return email;
         }
     }
