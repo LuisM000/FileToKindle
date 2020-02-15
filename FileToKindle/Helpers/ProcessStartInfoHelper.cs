@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace FileToKindle.Helpers
 {
@@ -14,6 +15,24 @@ namespace FileToKindle.Helpers
                 UseShellExecute = false,
                 CreateNoWindow = true,
             };
+        }
+
+        public static Process Create(string arguments, CancellationToken cancellationToken)
+        {
+            var process = new Process()
+            {
+                StartInfo = CreateWithArguments(arguments)
+            };
+            cancellationToken.Register(() =>
+            {
+                try
+                {
+                    if (!process.HasExited)
+                        process.Kill();
+                }
+                catch { }
+            });
+            return process;
         }
     }
 }

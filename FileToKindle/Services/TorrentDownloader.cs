@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using FileToKindle.Helpers;
 using FileToKindle.Model;
 
@@ -12,9 +13,15 @@ namespace FileToKindle.Services
 
         public string DownloadMagnetLink(MagnetLink magnetLink)
         {
-            var downloadMagnetLinkArguments = string.Concat(aria2cPath, " --dir='", magnetLink.DownloadDirectory , "' '", magnetLink.Link, "' --seed-time=0");
-                using (var process = Process.Start(ProcessStartInfoHelper.CreateWithArguments(downloadMagnetLinkArguments)))
+            return DownloadMagnetLink(magnetLink, CancellationToken.None);
+        }
+
+        public string DownloadMagnetLink(MagnetLink magnetLink, CancellationToken cancellationToken)
+        {
+            var downloadMagnetLinkArguments = string.Concat(aria2cPath, " --dir='", magnetLink.DownloadDirectory, "' '", magnetLink.Link, "' --seed-time=0");
+            using (var process = ProcessStartInfoHelper.Create(downloadMagnetLinkArguments, cancellationToken))
             {
+                process.Start();
                 process.WaitForExit();
                 if (process.ExitCode != 0)
                 {
