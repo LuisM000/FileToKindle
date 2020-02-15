@@ -1,0 +1,308 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:FileToKindle.Shared.ViewModels"
+    xmlns:model="clr-namespace:FileToKindle.Shared.Models"
+    x:Class="FileToKindle.Shared.Views.ProcessPage">
+
+    <ScrollView>
+
+        <Grid
+            RowSpacing="25"
+            Padding="25">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+
+            <Button
+                Grid.Row="0"
+                Grid.Column="0"
+                Text="Atrás"
+                Command="{Binding BackCommand}"/>
+
+            <Label
+                Grid.Row="0"
+                Grid.Column="2"
+                FontSize="Large">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.ProcessingFiles}">
+                        <Setter Property="Text" Value="(1/2) Procesando archivos..."/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.SendingFiles}">
+                        <Setter Property="Text" Value="(2/2) Enviando archivos..."/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.Completed}">
+                        <Setter Property="Text" Value="Finalizado"/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.Error}">
+                        <Setter Property="Text" Value="Finalizado"/>
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+
+
+            <StackLayout
+                Grid.Row="1"                
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                VerticalOptions="StartAndExpand"
+                BindableLayout.ItemsSource="{Binding FilesProcess}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="20"/>
+                            </Grid.RowDefinitions>
+
+                            <Label
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding MagnetLink.DisplayNameOrLink}"/>
+
+                            <Label
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                TextColor="Gray"
+                                FontSize="Micro"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding MagnetLink.Link}"/>
+
+                            <Label
+                                Grid.Column="2"
+                                Grid.Row="0"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Downloading}">
+                                        <Setter Property="Text" Value="Descargando"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Converting}">
+                                        <Setter Property="Text" Value="Convirtiendo"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.PendingSend}">
+                                        <Setter Property="Text" Value="Pendiente de envío"/>
+                                    </DataTrigger>
+                                     <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Sending}">
+                                        <Setter Property="Text" Value="Enviando"/>
+                                    </DataTrigger>
+                                     <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Completed}">
+                                        <Setter Property="Text" Value="Completado"/>
+                                    </DataTrigger>
+                                     <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Error}">
+                                        <Setter Property="Text" Value="Error"/>
+                                    </DataTrigger>
+                                     <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.None}">
+                                        <Setter Property="Text" Value="Desconocido"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            
+                            <ActivityIndicator
+                                Grid.Column="2"
+                                Grid.Row="1"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Center"
+                                IsRunning="False"
+                                IsVisible="False">
+                                <ActivityIndicator.Triggers>
+                                    <DataTrigger TargetType="ActivityIndicator" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Downloading}">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                        <Setter Property="IsRunning" Value="True"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="ActivityIndicator" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Converting}">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                        <Setter Property="IsRunning" Value="True"/>
+                                    </DataTrigger>
+                                     <DataTrigger TargetType="ActivityIndicator" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Sending}">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                        <Setter Property="IsRunning" Value="True"/>
+                                    </DataTrigger>
+                                </ActivityIndicator.Triggers>
+                            </ActivityIndicator>
+
+                            <Button
+                                Grid.Column="4"
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                VerticalOptions="Center"
+                                HorizontalOptions="FillAndExpand"
+                                IsVisible="False"
+                                Text="Cancelar"
+                                Command="{Binding Source={RelativeSource Mode=FindAncestorBindingContext, AncestorType={x:Type viewModels:ViewModelBase}}, Path=CancelFileProcessCommand}"
+                                CommandParameter="{Binding .}">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Downloading}">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static model:FileProcessStatus.Converting}">
+                                        <Setter Property="IsVisible" Value="True"/>
+                                    </DataTrigger>                                   
+                                </Button.Triggers>
+                            </Button>
+
+                        </Grid>
+
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+
+            </StackLayout>
+            
+            <Button
+                Grid.Row="2"                
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                HorizontalOptions="End"
+                IsVisible="False"
+                Text="Reintentar erróneos"
+                Command="{Binding RetryProcessWithErrorCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.Completed}">
+                        <Setter Property="IsVisible" Value="True"/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.Error}">
+                        <Setter Property="IsVisible" Value="True"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Grid
+                Grid.Row="3"                
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                VerticalOptions="StartAndExpand"
+                IsVisible="False">
+                <Grid.Triggers>
+                    <DataTrigger TargetType="Grid" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.Completed}">
+                        <Setter Property="IsVisible" Value="True"/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Grid" Binding="{Binding Status}" Value="{x:Static viewModels:ProcessViewModelStatus.Error}">
+                        <Setter Property="IsVisible" Value="True"/>
+                    </DataTrigger>
+                </Grid.Triggers>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Label
+                    Grid.Row="0"
+                    FontSize="Large"
+                    Text="Resultados"/>
+
+                <Label
+                    Grid.Row="1"
+                    Text="{Binding FilesProcessResult.CompletedCount, StringFormat='{0} archivos completados con éxito'}"/>
+
+                <StackLayout
+                    Grid.Row="2"
+                    Padding="10,0,10,10"
+                    Orientation="Vertical"
+                    BindableLayout.ItemsSource="{Binding FilesProcessResult.Completed}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+
+                            <Label
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding MagnetLink.DisplayNameOrLink}"/>
+
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate> 
+                </StackLayout>
+
+                <Label
+                    Grid.Row="3"
+                    Text="{Binding FilesProcessResult.NotCompletedCount, StringFormat='{0} archivos no completados'}"/>
+
+                <StackLayout
+                    Grid.Row="4"
+                    Padding="10,0,10,10"
+                    Orientation="Vertical"
+                    BindableLayout.ItemsSource="{Binding FilesProcessResult.NotCompleted}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+
+                            <StackLayout
+                                Orientation="Vertical">
+
+                                <Label
+                                    Grid.Column="0"
+                                    Grid.Row="0"
+                                    LineBreakMode="TailTruncation"
+                                    Text="{Binding MagnetLink.DisplayNameOrLink}"/>
+
+                                <StackLayout
+                                    Spacing="0"
+                                    Orientation="Horizontal">
+
+                                    <Label
+                                        Grid.Column="0"
+                                        Grid.Row="0"
+                                        FontSize="Small"
+                                        Text="Error: "/>
+
+                                    <Label
+                                        Grid.Column="0"
+                                        Grid.Row="0"
+                                        FontSize="Small"
+                                        Text="Desconocido">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding StatusError}" Value="{x:Static model:FileProcessStatus.Downloading}">
+                                                <Setter Property="Text" Value="No se pudo descargar"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding StatusError}" Value="{x:Static model:FileProcessStatus.Converting}">
+                                                <Setter Property="Text" Value="No se pudo convertir a mobi"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding StatusError}" Value="{x:Static model:FileProcessStatus.PendingSend}">
+                                                <Setter Property="Text" Value="Se ha quedado pendiente de envío"/>
+                                            </DataTrigger>
+                                             <DataTrigger TargetType="Label" Binding="{Binding StatusError}" Value="{x:Static model:FileProcessStatus.Sending}">
+                                                <Setter Property="Text" Value="No se pudo enviar al correo email"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                </StackLayout>
+
+                            </StackLayout>                            
+
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>                    
+
+                </StackLayout>
+
+                
+
+            </Grid>
+
+        </Grid>
+
+    </ScrollView>   
+    
+</ContentPage>

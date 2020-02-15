@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:FileToKindle.Shared.Converters"
+    x:Class="FileToKindle.Shared.Views.EmailPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:EmptyValueToBoolConverter x:Key="EmptyValueToBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid
+         Padding="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            FontSize="Medium"
+            Text="Email autorizado para envío de documentos"/>
+
+        <Entry
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"            
+            Placeholder="Dirección de email"
+            Text="{Binding Email.Address}"/>
+
+         <Entry
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            IsPassword="True"
+            Placeholder="Contraseña"
+            Text="{Binding Email.Password}"/>
+
+         <Entry
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Placeholder="Host"
+            Text="{Binding Email.Host}"/>
+
+         <Entry
+            Grid.Row="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Placeholder="Puerto"
+            Text="{Binding Email.Port}"/>
+
+        <Label
+            Grid.Row="6"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Text="Asegúrate de que la dirección de correo es válida y has introducido la contraseña"
+            FontSize="Small"
+            TextColor="Red"
+            IsVisible="false">
+            <Label.Triggers>
+                <MultiTrigger TargetType="Label">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Email.IsValid}" Value="false" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsVisible" Value="true" />
+                </MultiTrigger>
+            </Label.Triggers>
+        </Label>
+
+        <Button
+            Grid.Row="8"
+            Grid.Column="0"
+            Text="Cancelar"
+            Command="{Binding CancelCommand}"/>
+
+         <Button
+            Grid.Row="8"
+            Grid.Column="2"
+            Text="Guardar"
+            Command="{Binding SaveCommand}"/>
+
+        <Button
+            Grid.Row="8"
+            Grid.Column="3"
+            Text="Aceptar"
+            TextColor="White"
+            BackgroundColor="DodgerBlue"
+            Command="{Binding AcceptCommand}"/>
+
+     </Grid>
+    
+</ContentPage>

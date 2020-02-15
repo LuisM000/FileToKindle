@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:FileToKindle.Shared.ViewModels"
+    xmlns:converters="clr-namespace:FileToKindle.Shared.Converters"
+    x:Class="FileToKindle.Shared.Views.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:EmptyValueToBoolConverter x:Key="EmptyValueToBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+
+    <Grid
+        Padding="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+
+        <Entry
+            Grid.Row="0"
+            Grid.Column="0"
+            x:Name="MagnetLinkEntry"
+            Text="{Binding MagnetLink.Link}"            
+            Placeholder="Introduce un Magnet link"/>
+
+        <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="Añadir"
+            Command="{Binding AddMagnetLinkCommand}"
+            CommandParameter="{Binding MagnetLink}"/>
+            
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Text="Introduce un Magnet link con un formato válido"
+            FontSize="Small"
+            TextColor="Red"
+            IsVisible="false">
+            <Label.Triggers>
+                <MultiTrigger TargetType="Label">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding MagnetLink.Link, Converter={StaticResource EmptyValueToBoolConverter}}" Value="false" />
+                        <BindingCondition Binding="{Binding MagnetLink.IsValid}" Value="false" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsVisible" Value="true" />
+                </MultiTrigger>
+            </Label.Triggers>
+        </Label>
+            
+        <ListView
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            HasUnevenRows="False"
+            RowHeight="70"
+            BackgroundColor="White"
+            ItemsSource="{Binding MagnetLinks}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                TextColor="Black"
+                                MaxLines="1"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding DisplayNameOrLink}"/>
+
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                TextColor="Gray"
+                                FontSize="Micro"
+                                LineBreakMode="CharacterWrap"
+                                Text="{Binding Link}"/>
+
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Grid.RowSpan="2"
+                                VerticalOptions="Center"
+                                HorizontalOptions="Center"
+                                FontSize="Large"
+                                Text="X"
+                                Command="{Binding Source={RelativeSource Mode=FindAncestorBindingContext, AncestorType={x:Type viewModels:ViewModelBase}}, Path=DeleteMagnetLinkCommand}"
+                                CommandParameter="{Binding .}"/>
+
+                        </Grid>
+                          
+                    </ViewCell>      
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Entry
+            Grid.Row="5"
+            Grid.Column="0"
+            x:Name="EmailEntry"
+            Text="{Binding KindleEmail.Address}"
+            Placeholder="Email de tu Kindle"/>
+
+        <Button
+            Grid.Row="5"
+            Grid.Column="1"
+            Text="Enviar"
+            TextColor="White"
+            BackgroundColor="DodgerBlue"
+            Command="{Binding ProcessCommand}"/>
+
+        <Label
+            Grid.Row="6"
+            Grid.Column="0"
+            Text="Introduce un email válido"
+            FontSize="Small"
+            TextColor="Red"
+            IsVisible="false">
+            <Label.Triggers>
+                <MultiTrigger TargetType="Label">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding KindleEmail.Address, Converter={StaticResource EmptyValueToBoolConverter}}" Value="false" />
+                        <BindingCondition Binding="{Binding KindleEmail.IsValid}" Value="false" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsVisible" Value="true" />
+                </MultiTrigger>
+            </Label.Triggers>
+        </Label>
+
+    </Grid>
+
+
+</ContentPage>
