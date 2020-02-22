@@ -6,7 +6,7 @@ Configura el archivo email.json con los datos de tu email autorizado
 
 {
   "Address": "tu_email_autorizado@email.com",
-  "Password": "limoigjploiwzxaz",
+  "Password": "password",
   "Host": "smtp.office365.com",
   "Port": 587
 }
