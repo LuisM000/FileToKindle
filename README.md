@@ -13,6 +13,7 @@ Configura el archivo email.json con los datos de tu email autorizado
 
 Abre la aplicación de consola, configura el email de tu kindle y añade los magnet links</br>
 >process -e 'tu_email_kindle@kindle.com' -m 'magnetLink1' 'magnetLink2'</br></br>
+
 ![Console App](images/consoleapp.gif)
 
 
